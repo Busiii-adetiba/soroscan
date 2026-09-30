@@ -17,6 +17,7 @@ const CONTRACT_RECENT_EVENTS_KEY: Symbol = symbol_short!("revents");
 const WASM_HASH_KEY: Symbol = symbol_short!("wasmhash");
 
 /// Topic schema version used by [`emit_soroscan_event`].
+/// Topic schema version used by [`emit_soroscan_event`].
 pub const SOROSCAN_EVENT_VERSION: u32 = 1;
 
 /// Publish an event using the standard SoroScan topic layout:
