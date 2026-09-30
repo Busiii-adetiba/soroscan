@@ -353,7 +353,7 @@ impl SoroScanCore {
 
         // Increment counter with overflow protection
         let mut count: u64 = env.storage().instance().get(&COUNTER_KEY).unwrap_or(0);
-        count = count.saturating_add(1);
+        count = count.checked_add(1).unwrap_or(u64::MAX);
         env.storage().instance().set(&COUNTER_KEY, &count);
 
         // Store latest event by type
@@ -374,7 +374,7 @@ impl SoroScanCore {
         contract_stats.set(
             contract_id.clone(),
             ContractStats {
-                event_count: current_stats.event_count.saturating_add(1),
+                event_count: current_stats.event_count.checked_add(1).unwrap_or(u64::MAX),
             },
         );
         env.storage()
@@ -465,7 +465,8 @@ impl SoroScanCore {
             .instance()
             .get::<Symbol, u64>(&COUNTER_KEY)
             .unwrap_or(0)
-            .saturating_add(1);
+            .checked_add(1)
+            .unwrap_or(u64::MAX);
         env.storage().instance().set(&COUNTER_KEY, &count);
         env.storage().instance().set(&correlation_key, &record);
         env.storage().instance().set(
@@ -705,7 +706,7 @@ impl SoroScanCore {
                 timestamp,
             };
 
-            count = count.saturating_add(1);
+            count = count.checked_add(1).unwrap_or(u64::MAX);
             env.storage().instance().set(&entry.event_type, &record);
 
             // Store latest event by contract (SC-16)
@@ -718,7 +719,7 @@ impl SoroScanCore {
             contract_stats.set(
                 entry.contract_id.clone(),
                 ContractStats {
-                    event_count: current_stats.event_count.saturating_add(1),
+                    event_count: current_stats.event_count.checked_add(1).unwrap_or(u64::MAX),
                 },
             );
 
@@ -902,7 +903,7 @@ impl SoroScanCore {
             .get(&INDEXER_COUNTS_KEY)
             .unwrap_or_else(|| Map::new(env));
         let current = counts.get(indexer.clone()).unwrap_or(0);
-        counts.set(indexer.clone(), current.saturating_add(by));
+        counts.set(indexer.clone(), current.checked_add(by).unwrap_or(u64::MAX));
         env.storage().instance().set(&INDEXER_COUNTS_KEY, &counts);
     }
     /// Pause event recording (SC-28).
@@ -1029,7 +1030,8 @@ impl SoroScanCore {
             .instance()
             .get::<Symbol, u64>(&COUNTER_KEY)
             .unwrap_or(0)
-            .saturating_add(1);
+            .checked_add(1)
+            .unwrap_or(u64::MAX);
         env.storage().instance().set(&COUNTER_KEY, &count);
         env.storage()
             .instance()
